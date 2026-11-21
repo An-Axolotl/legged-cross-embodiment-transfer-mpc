@@ -9,3 +9,10 @@ dependencies:
   - numpy=2.4
   - matplotlib=3.10
   - ffmpeg
+  - pip
+  - pip:
+      - pyrender==0.1.45   # offscreen (EGL) rasteriser for the Part A videos
+      - trimesh
+      - pycollada
+      - imageio
+      - pillow

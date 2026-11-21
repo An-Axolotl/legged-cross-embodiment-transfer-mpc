@@ -11,7 +11,7 @@ This repository holds the code, data and videos behind two studies, published he
 
 ## TL;DR
 
-**When does MPC transfer between legged robots work?** We tested all 156 cross-robot pairs of 13 quadrupeds, with ablations and controlled sweeps:
+**When does MPC transfer between legged robots work?** I tested all 156 cross-robot pairs of 13 quadrupeds, with ablations and controlled sweeps:
 
 1. **Base inertia is what matters.** Injecting another robot's *leg* mass matrices or *leg* bias forces is almost harmless: 153/156 and 155/156 pairs still work, with no falls. Injecting another robot's *base inertia* alone causes 14 falls and 29 degraded runs. All of the falls in the inertia-only ablation come from this single term.
 2. **The safe envelope:** transfer worked in **every one** of the 61 pairs with $0.2 \le I_\text{src}/I_\text{tgt} \le 3$, and every one of the 66 pairs with $1/3 \le m_\text{src}/m_\text{tgt} \le 2$. This is a sufficient condition, not a necessary one: about half the pairs outside the envelope still work.
@@ -21,30 +21,158 @@ This repository holds the code, data and videos behind two studies, published he
 
 **Part A:** giving a humanoid the *same* mass, limbs and torque budget as a quadruped does not make the jump equally easy. The peak joint torque roughly doubles (328 vs 154 N·m), and the pre-launch CoM sits only 8 mm inside the support region, against 27 cm for the quadruped.
 
+
+
+---
+
+## Contents
+1. [All transfers at a glance](#all-transfers-at-a-glance)
+2. [Individual transfers](#individual-transfers)
+3. [Part B: when does transfer work?](#part-b-when-does-transfer-work)
+4. [Setup](#setup)
+5. [Reproducing everything](#reproducing-everything)
+6. [Part A: the maths of the jump](#part-a-the-maths-of-the-jump)
+7. [Part B: the maths of the MPC transfer](#part-b-the-maths-of-the-mpc-transfer)
+8. [Caveats and honest notes](#caveats-and-honest-notes)
+9. [Repository layout](#repository-layout)
+10. [Acknowledgements](#acknowledgements) · [Citation](#citation)
+
+---
+
+## All transfers at a glance
+
+### Part B: every source → target pair (13 × 13)
+
 <p align="center">
   <img src="results/analysis/fig_transfer_matrix.png" width="80%"><br>
   <em>All 169 source → target combinations on the 20 s rich command profile. ✕ = fell. Heavy-to-light (lower left) fails; light-to-heavy (upper right) mostly works.</em>
 </p>
 
-<p align="center">
-  <img src="media/gifs/jump_anymal_same.gif" width="40%"> <img src="media/gifs/jump_talos_same.gif" width="40%"><br>
-  <em>Part A: same 1 m × 0.5 m jump, same 9.07 kg, 38 cm thigh, 33 cm shank: quadruped (left), humanoid legs (right).</em>
-</p>
+| transfer type (156 cross-robot pairs each) | works | degraded | fell |
+|---|---|---|---|
+| references only (target keeps its own dynamics) | 156 | 0 | 0 |
+| base inertia only | 113 | 29 | 14 |
+| leg mass matrices only | 153 | 3 | 0 |
+| leg bias forces only | 155 | 1 | 0 |
+| **full transfer** (everything) | 108 | 28 | 20 |
+
+### Part B: one source model (Go1) on every robot
+
+#### Original Jan-2025 Go1 recording (human-driven, 40 s, shown at 2.5× speed) → every robot
+
+| Go1 → Go1 | Go1 → quadDoggo (Go1 clone) | Go1 → Go1, masses ±20 %, base ×1.3 | Go1 → Solo-12 | Go1 → Mini Cheetah |
+|---|---|---|---|---|
+| <img src="media/gifs/original_go1_to_go1.gif" width="180"><br><sub>xy err 0.03 m</sub> | <img src="media/gifs/original_go1_to_quadDoggo.gif" width="180"><br><sub>xy err 0.03 m</sub> | <img src="media/gifs/original_go1_to_go1_perturbed.gif" width="180"><br><sub>xy err 0.16 m</sub> | <img src="media/gifs/original_go1_to_solo12.gif" width="180"><br><sub>xy err 0.10 m</sub> | <img src="media/gifs/original_go1_to_mini_cheetah.gif" width="180"><br><sub>xy err 0.31 m</sub> |
+| **Go1 → A1** | **Go1 → Go2** | **Go1 → Aliengo** | **Go1 → Laikago** | **Go1 → ANYmal B** |
+| <img src="media/gifs/original_go1_to_a1.gif" width="180"><br><sub>xy err 0.37 m</sub> | <img src="media/gifs/original_go1_to_go2.gif" width="180"><br><sub>xy err 0.05 m</sub> | <img src="media/gifs/original_go1_to_aliengo.gif" width="180"><br><sub>xy err 0.08 m</sub> | <img src="media/gifs/original_go1_to_laikago.gif" width="180"><br><sub>xy err 0.13 m</sub> | <img src="media/gifs/original_go1_to_anymal_b.gif" width="180"><br><sub>xy err 0.07 m</sub> |
+| **Go1 → ANYmal C** | **Go1 → B1** | **Go1 → B2** | **Go1 → HyQ** | **Go1 → HyQReal** |
+| <img src="media/gifs/original_go1_to_anymal_c.gif" width="180"><br><sub>xy err 0.19 m</sub> | <img src="media/gifs/original_go1_to_b1.gif" width="180"><br><sub>xy err 0.41 m</sub> | <img src="media/gifs/original_go1_to_b2.gif" width="180"><br><sub>xy err 0.28 m</sub> | <img src="media/gifs/original_go1_to_hyq.gif" width="180"><br><sub>xy err 1.22 m</sub> | <img src="media/gifs/original_go1_to_hyqreal.gif" width="180"><br><sub>xy err 1.14 m</sub> |
+
+#### Go1 model → every robot on the 20 s rich command profile (shown at 1.25× speed)
+
+| Go1 → Solo-12 | Go1 → Mini Cheetah | Go1 → Go1 | Go1 → A1 | Go1 → Go2 |
+|---|---|---|---|---|
+| <img src="media/gifs/rich_go1_to_solo12.gif" width="180"><br><sub>**fell**</sub> | <img src="media/gifs/rich_go1_to_mini_cheetah.gif" width="180"><br><sub>drift 0.01 m (works)</sub> | <img src="media/gifs/rich_go1_to_go1.gif" width="180"><br><sub>drift 0.01 m (works)</sub> | <img src="media/gifs/rich_go1_to_a1.gif" width="180"><br><sub>drift 0.03 m (works)</sub> | <img src="media/gifs/rich_go1_to_go2.gif" width="180"><br><sub>drift 0.01 m (works)</sub> |
+| **Go1 → Aliengo** | **Go1 → Laikago** | **Go1 → ANYmal B** | **Go1 → ANYmal C** | **Go1 → B1** |
+| <img src="media/gifs/rich_go1_to_aliengo.gif" width="180"><br><sub>drift 0.02 m (works)</sub> | <img src="media/gifs/rich_go1_to_laikago.gif" width="180"><br><sub>drift 0.05 m (works)</sub> | <img src="media/gifs/rich_go1_to_anymal_b.gif" width="180"><br><sub>drift 0.21 m (works)</sub> | <img src="media/gifs/rich_go1_to_anymal_c.gif" width="180"><br><sub>drift 0.15 m (works)</sub> | <img src="media/gifs/rich_go1_to_b1.gif" width="180"><br><sub>drift 0.11 m (works)</sub> |
+| **Go1 → B2** | **Go1 → HyQ** | **Go1 → HyQReal** |  |  |
+| <img src="media/gifs/rich_go1_to_b2.gif" width="180"><br><sub>drift 0.08 m (works)</sub> | <img src="media/gifs/rich_go1_to_hyq.gif" width="180"><br><sub>drift 0.27 m (degraded)</sub> | <img src="media/gifs/rich_go1_to_hyqreal.gif" width="180"><br><sub>drift 0.12 m (works)</sub> |  |  |
+
+Every robot's native run, and every MP4 above at full length, is in [`media/videos/`](media/videos). Any other pair from the matrix can be rendered with `transfer.py --video` (see [Reproducing](#reproducing-everything)).
+
+### Part A: the same jump on every body
+
+Every optimised jump (1 m forward, 0.5 m CoM rise), rendered with the robots' full visual meshes. Pinocchio computes every link pose from the Crocoddyl solution ([`trajopt/render_jump.py`](trajopt/render_jump.py)); the red sphere is the centre of mass, the blue/red lines the start and the 1 m target. Half speed.
+
+| robot | stock robot | same mass / limbs / torque limit (9.07 kg, 0.38 m + 0.33 m, 80 N·m) |
+|---|---|---|
+| **ANYmal C** | <img src="media/gifs/jump_anymal.gif" width="260"> | <img src="media/gifs/jump_anymal_same.gif" width="260"> |
+| **Unitree B1** | <img src="media/gifs/jump_b1.gif" width="260"> | <img src="media/gifs/jump_b1_same.gif" width="260"> |
+| **Unitree Go1** | <img src="media/gifs/jump_go1.gif" width="260"> | <img src="media/gifs/jump_go1_same.gif" width="260"> |
+| **HyQ** | <img src="media/gifs/jump_hyq.gif" width="260"> | <img src="media/gifs/jump_hyq_same.gif" width="260"> |
+| **Talos (legs; upper body frozen)** | <img src="media/gifs/jump_talos.gif" width="260"> | <img src="media/gifs/jump_talos_same.gif" width="260"> |
+
+All twelve runs, including the forward-dynamics transcriptions (`*_fwd`), are in [`media/videos/`](media/videos) as `jump_<run>.mp4`.
 
 ---
 
-## Contents
-1. [Part B: when does transfer work?](#part-b-when-does-transfer-work)
-2. [Part B: every transfer (GIFs)](#part-b-every-transfer)
-3. [Part B: robots and tables](#part-b-robots-and-tables)
-4. [Part A: results](#part-a-results)
-5. [Setup](#setup)
-6. [Reproducing everything](#reproducing-everything)
-7. [Part A: the maths of the jump](#part-a-the-maths-of-the-jump)
-8. [Part B: the maths of the MPC transfer](#part-b-the-maths-of-the-mpc-transfer)
-9. [Caveats and honest notes](#caveats-and-honest-notes)
-10. [Repository layout](#repository-layout)
-11. [Acknowledgements](#acknowledgements) · [Citation](#citation)
+## Individual transfers
+
+### Part B: the 13 robots, each under its own NMPC
+
+Each robot driven by its own controller on the 20 s rich command profile (the reference every transfer is compared against).
+
+| robot | family | mass [kg] | controller mass [kg] | hip height [m] | torque limit [N·m] | knees (front/rear) | I_xx, I_yy, I_zz [kg·m²] | own run | video |
+|---|---|---|---|---|---|---|---|---|---|
+| solo12 | ODRI | 2.5 | 2.5 | 0.23 | 3 | back/front | 0.03, 0.05, 0.07 | completes | [mp4](media/videos/native_solo12.mp4) |
+| mini_cheetah | MIT | 12.5 | 12.5 | 0.23 | 31 | back/back | 0.15, 0.36, 0.40 | completes | [mp4](media/videos/native_mini_cheetah.mp4) |
+| go1 | Unitree | 12.7 | 12.0 ⚠ | 0.30 | 45 | back/back | 0.15, 0.40, 0.42 | completes | [mp4](media/videos/native_go1.mp4) |
+| a1 | Unitree | 13.7 | 13.7 | 0.27 | 34 | back/back | 0.15, 0.37, 0.39 | completes | [mp4](media/videos/native_a1.mp4) |
+| go2 | Unitree | 15.2 | 24.0 ⚠ | 0.28 | 31 | back/back | 0.20, 0.51, 0.53 | completes | [mp4](media/videos/native_go2.mp4) |
+| aliengo | Unitree | 24.6 | 24.0 | 0.35 | 38 | back/back | 0.26, 0.91, 0.92 | completes | [mp4](media/videos/native_aliengo.mp4) |
+| laikago | Unitree | 25.4 | 25.4 | 0.40 | 43 | back/back | 0.45, 1.02, 1.04 | completes | [mp4](media/videos/native_laikago.mp4) |
+| anymal_b | ANYbotics | 30.5 | 30.5 | 0.51 | 80 | back/front | 0.99, 2.01, 2.03 | completes | [mp4](media/videos/native_anymal_b.mp4) |
+| anymal_c | ANYbotics | 52.1 | 52.1 | 0.56 | 80 | back/front | 1.75, 4.75, 4.68 | completes | [mp4](media/videos/native_anymal_c.mp4) |
+| b1 | Unitree | 55.7 | 55.7 | 0.53 | 108 | back/back | 1.63, 5.24, 5.12 | completes | [mp4](media/videos/native_b1.mp4) |
+| b2 | Unitree | 83.5 | 83.5 | 0.48 | 233 | back/back | 1.83, 7.17, 7.60 | completes | [mp4](media/videos/native_b2.mp4) |
+| hyq | IIT | 86.8 | 86.8 | 0.60 | 150 | back/front | 4.19, 11.72, 12.69 | completes | [mp4](media/videos/native_hyq.mp4) |
+| hyqreal | IIT | 107.6 | 108.4 | 0.50 | 210 | back/back | 4.76, 20.69, 21.32 | completes | [mp4](media/videos/native_hyqreal.mp4) |
+
+### Part B: the original Jan-2025 Go1 recording on each robot
+
+| target | survived | mean abs x err [m] | mean abs y err [m] | mean abs z err [m] | Σ error (x+y+z) | video |
+|---|---|---|---|---|---|---|
+| quadDoggo | yes (40 s) | 0.011 | 0.021 | 0.003 | 710 | [mp4](media/videos/original_go1_to_quadDoggo.mp4) |
+| go1 | yes (40 s) | 0.011 | 0.021 | 0.003 | 710 | [mp4](media/videos/original_go1_to_go1.mp4) |
+| anymal_b | yes (40 s) | 0.036 | 0.036 | 0.010 | 1642 | [mp4](media/videos/original_go1_to_anymal_b.mp4) |
+| aliengo | yes (40 s) | 0.015 | 0.068 | 0.003 | 1721 | [mp4](media/videos/original_go1_to_aliengo.mp4) |
+| go2 | yes (40 s) | 0.037 | 0.017 | 0.044 | 1966 | [mp4](media/videos/original_go1_to_go2.mp4) |
+| solo12 | yes (40 s) | 0.068 | 0.034 | 0.007 | 2189 | [mp4](media/videos/original_go1_to_solo12.mp4) |
+| laikago | yes (40 s) | 0.070 | 0.058 | 0.005 | 2667 | [mp4](media/videos/original_go1_to_laikago.mp4) |
+| go1_perturbed | yes (40 s) | 0.104 | 0.055 | 0.014 | 3457 | [mp4](media/videos/original_go1_to_go1_perturbed.mp4) |
+| anymal_c | yes (40 s) | 0.071 | 0.117 | 0.011 | 3981 | [mp4](media/videos/original_go1_to_anymal_c.mp4) |
+| b2 | yes (40 s) | 0.100 | 0.176 | 0.014 | 5812 | [mp4](media/videos/original_go1_to_b2.mp4) |
+| mini_cheetah | yes (40 s) | 0.213 | 0.097 | 0.006 | 6322 | [mp4](media/videos/original_go1_to_mini_cheetah.mp4) |
+| a1 | yes (40 s) | 0.243 | 0.131 | 0.002 | 7536 | [mp4](media/videos/original_go1_to_a1.mp4) |
+| b1 | yes (40 s) | 0.220 | 0.194 | 0.007 | 8417 | [mp4](media/videos/original_go1_to_b1.mp4) |
+| hyqreal | yes (40 s) | 0.542 | 0.593 | 0.012 | 22944 | [mp4](media/videos/original_go1_to_hyqreal.mp4) |
+| hyq | yes (40 s) | 0.352 | 0.869 | 0.018 | 24806 | [mp4](media/videos/original_go1_to_hyq.mp4) |
+
+*Error columns* (original recording): the mean absolute deviation per 2 ms step from the Go1 source's base path in x and y, and from the commanded height in z. The Σ column is the error $E$ defined [below](#what-transfer-means). ⚠ marks a controller mass that differs from the model mass by more than 5 %. This is upstream Go2 configuration, kept unchanged.
+
+### Part B: original screen recordings (January 2025)
+
+These are the screen recordings made when the work was first done, using the interactive `simulation.py` (keyboard/joystick velocity commands). They are kept as-is.
+
+| Go1 → Go1 | Go1 → Go1 (randomised dynamics) | Go1 → B2 | Go1 → HyQReal |
+|---|---|---|---|
+| <img src="media/original_2025-01/go1_to_go1.gif" width="200"> | <img src="media/original_2025-01/go1_to_go1_randomized.gif" width="200"> | <img src="media/original_2025-01/go1_to_b2.gif" width="200"> | <img src="media/original_2025-01/go1_to_hyqreal.gif" width="200"> |
+
+In January 2025 the slides listed Go1 → B2 and Go1 → HyQReal as failures. In the original recordings and in these reruns, that failure is large path error and heading drift, not a fall.
+
+### Part A: each jump
+
+| run | formulation | converged (iters) | mass [kg] | final base x [m] | peak abs τ [N·m] | Σ abs τ [N·m] | max abs τ / limit | pre-launch CoM margin [m] |
+|---|---|---|---|---|---|---|---|---|
+| `anymal` | inverse | True (40) | 52.13 | 1.011 | 396 | 17736 | 4.95 | +0.308 |
+| `anymal_fwd` | forward | True (43) | 52.13 | 1.011 | 396 | 17736 | 4.95 | +0.308 |
+| `anymal_same` | inverse | True (29) | 9.07 | 1.010 | 154 | 3722 | 1.92 | +0.266 |
+| `b1` | inverse | True (10) | 55.69 | 1.015 | 427 | 21137 | 3.05 | +0.259 |
+| `b1_same` | inverse | True (8) | 9.07 | 0.977 | 178 | 3547 | 2.22 | +0.286 |
+| `go1` | inverse | True (9) | 13.10 | 1.035 | 178 | 3118 | 5.00 | +0.141 |
+| `go1_same` | inverse | True (8) | 9.07 | 1.023 | 176 | 3597 | 2.20 | +0.131 |
+| `hyq` | inverse | True (11) | 86.77 | 0.959 | 451 | 31808 | 3.01 | +0.267 |
+| `hyq_same` | inverse | True (11) | 9.07 | 0.958 | 146 | 3752 | 1.82 | +0.279 |
+| `talos` | inverse | True (74) | 90.27 | 0.914 | 1893 | 31848 | 6.31 | +0.008 |
+| `talos_fwd` | forward | True (48) | 90.27 | 0.914 | 1893 | 31848 | 6.31 | +0.008 |
+| `talos_same` | inverse | True (27) | 9.07 | 0.977 | 328 | 3491 | 4.10 | +0.008 |
+
+| ANYmal C (forward-dynamics transcription) | Talos (forward-dynamics transcription) |
+|---|---|
+| <img src="media/gifs/jump_anymal_fwd.gif" width="260"> | <img src="media/gifs/jump_talos_fwd.gif" width="260"> |
+
+<p align="center"><img src="results/jump/fig_quadruped_vs_humanoid_torques.png" width="90%"></p>
+<p align="center"><img src="results/jump/fig_effort_by_robot.png" width="90%"></p>
 
 ---
 
@@ -52,10 +180,10 @@ This repository holds the code, data and videos behind two studies, published he
 
 ### Experimental design
 
-- **13 robots** (table [below](#part-b-robots-and-tables)): Go1, Go2, A1, Aliengo, Laikago, B1, B2 (Unitree), Mini Cheetah (MIT), ANYmal B and ANYmal C (ANYbotics), HyQ and HyQReal (IIT), and Solo-12 (ODRI). Seven of them were imported from `example-robot-data` with [`robot_import/urdf_to_gymquadruped.py`](mpc_transfer/robot_import/urdf_to_gymquadruped.py). All 13 complete the test profile under their own controller.
+- **13 robots** (table [above](#part-b-the-13-robots-each-under-its-own-nmpc)): Go1, Go2, A1, Aliengo, Laikago, B1, B2 (Unitree), Mini Cheetah (MIT), ANYmal B and ANYmal C (ANYbotics), HyQ and HyQReal (IIT), and Solo-12 (ODRI). Seven of them were imported from `example-robot-data` with [`robot_import/urdf_to_gymquadruped.py`](mpc_transfer/robot_import/urdf_to_gymquadruped.py). All 13 complete the test profile under their own controller.
 - **Rich command profile** (20 s): ramp up, cruise at 0.4 m/s, turn left, sidestep, faster turn right, stop. A constant straight-line command barely exercises the dynamics: in an earlier version of this study every robot tracked it.
 - **Noise:** each joint gets Gaussian torque noise with σ = 4.4 % of its torque limit. That is exactly the original 2 N·m on Go1, and comparable across a 2.5 kg robot and a 108 kg one.
-- **Outcome:** *drift* is the mean planar distance between the transferred run and the target's own native run on the same commands. Different noise seeds give a noise floor of 0.6–6 cm. We call a run **works** if it doesn't fall and drift is under 0.25 m, **degraded** if it doesn't fall but drifts more, and **fell** otherwise. The conclusions hold for thresholds from 0.15 to 0.4 m: inside the inertia envelope, 60/61 pairs work at 0.15 m and 61/61 at 0.4 m.
+- **Outcome:** *drift* is the mean planar distance between the transferred run and the target's own native run on the same commands. Different noise seeds give a noise floor of 0.6–6 cm. I call a run **works** if it doesn't fall and drift is under 0.25 m, **degraded** if it doesn't fall but drifts more, and **fell** otherwise. The conclusions hold for thresholds from 0.15 to 0.4 m: inside the inertia envelope, 60/61 pairs work at 0.15 m and 61/61 at 0.4 m.
 - **Experiments** (≈ 950 simulations, [`analysis/run_experiments.py`](analysis/run_experiments.py)):
   - the full 13 × 13 transfer matrix;
   - a **component ablation** for each of the 156 pairs, injecting only one of {base inertia, leg mass matrix, leg bias forces};
@@ -106,7 +234,7 @@ The sweeps on Go1 (target = Go1, one injected quantity scaled) agree. Drift bare
 
 **Rule of thumb:** transfer works when the injected base inertia is within **0.2× to 3×** of the target's true inertia: 61/61 pairs inside work; outside, 47/95 work and 20 fall. For mass the range is **1/3× to 2×**: 66/66 pairs inside work; outside, 42/90 work and 20 fall. Because inertia scales roughly with mass across these robots (see the plot), the two conditions select nearly the same pairs.
 
-*Why the asymmetry?* This is our interpretation, not something we isolated. The NMPC uses the target's own mass but the source's inertia, so it predicts the angular response to a moment as $I_\text{src}^{-1}\tau$. If $I_\text{src}$ is too large, the model thinks the body barely rotates and asks for large corrective moments, which over-rotate the real, lighter body. Under 100 Hz replanning that becomes oscillation and yaw drift, the behaviour visible in the HyQ/HyQReal GIFs. If $I_\text{src}$ is too small, the controller is merely timid, and replanning corrects the residual.
+*Why the asymmetry?* This is my interpretation, not something I isolated. The NMPC uses the target's own mass but the source's inertia, so it predicts the angular response to a moment as $I_\text{src}^{-1}\tau$. If $I_\text{src}$ is too large, the model thinks the body barely rotates and asks for large corrective moments, which over-rotate the real, lighter body. Under 100 Hz replanning that becomes oscillation and yaw drift, the behaviour visible in the HyQ/HyQReal GIFs. If $I_\text{src}$ is too small, the controller is merely timid, and replanning corrects the residual.
 
 ### 3. What predicts success, statistically
 
@@ -150,116 +278,6 @@ Same-manufacturer pairs succeed more often only because they tend to be closer i
 ### 5. Falls
 
 All 20 falls: a1 → solo12, aliengo → solo12, anymal_b → solo12, anymal_c → solo12, b1 → solo12, b2 → a1, b2 → solo12, go1 → solo12, go2 → solo12, hyq → a1, hyq → mini_cheetah, hyq → solo12, hyqreal → a1, hyqreal → aliengo, hyqreal → go1, hyqreal → mini_cheetah, hyqreal → solo12, laikago → solo12, solo12 → hyq, solo12 → mini_cheetah. Eleven are on Solo-12, whose 2.7 N·m motors cannot follow any heavier robot's model on this profile. Solo-12 survives the gentler original Jan-2025 recording driven by Go1's model.
-
----
-
-## Part B: every transfer
-
-### Original Jan-2025 Go1 recording (human-driven, 40 s, shown at 2.5× speed) → every robot
-
-| Go1 → Go1 | Go1 → quadDoggo (Go1 clone) | Go1 → Go1, masses ±20 %, base ×1.3 | Go1 → Solo-12 | Go1 → Mini Cheetah |
-|---|---|---|---|---|
-| <img src="media/gifs/original_go1_to_go1.gif" width="180"><br><sub>xy err 0.03 m</sub> | <img src="media/gifs/original_go1_to_quadDoggo.gif" width="180"><br><sub>xy err 0.03 m</sub> | <img src="media/gifs/original_go1_to_go1_perturbed.gif" width="180"><br><sub>xy err 0.16 m</sub> | <img src="media/gifs/original_go1_to_solo12.gif" width="180"><br><sub>xy err 0.10 m</sub> | <img src="media/gifs/original_go1_to_mini_cheetah.gif" width="180"><br><sub>xy err 0.31 m</sub> |
-| **Go1 → A1** | **Go1 → Go2** | **Go1 → Aliengo** | **Go1 → Laikago** | **Go1 → ANYmal B** |
-| <img src="media/gifs/original_go1_to_a1.gif" width="180"><br><sub>xy err 0.37 m</sub> | <img src="media/gifs/original_go1_to_go2.gif" width="180"><br><sub>xy err 0.05 m</sub> | <img src="media/gifs/original_go1_to_aliengo.gif" width="180"><br><sub>xy err 0.08 m</sub> | <img src="media/gifs/original_go1_to_laikago.gif" width="180"><br><sub>xy err 0.13 m</sub> | <img src="media/gifs/original_go1_to_anymal_b.gif" width="180"><br><sub>xy err 0.07 m</sub> |
-| **Go1 → ANYmal C** | **Go1 → B1** | **Go1 → B2** | **Go1 → HyQ** | **Go1 → HyQReal** |
-| <img src="media/gifs/original_go1_to_anymal_c.gif" width="180"><br><sub>xy err 0.19 m</sub> | <img src="media/gifs/original_go1_to_b1.gif" width="180"><br><sub>xy err 0.41 m</sub> | <img src="media/gifs/original_go1_to_b2.gif" width="180"><br><sub>xy err 0.28 m</sub> | <img src="media/gifs/original_go1_to_hyq.gif" width="180"><br><sub>xy err 1.22 m</sub> | <img src="media/gifs/original_go1_to_hyqreal.gif" width="180"><br><sub>xy err 1.14 m</sub> |
-
-### Go1 model → every robot on the 20 s rich command profile (shown at 1.25× speed)
-
-| Go1 → Solo-12 | Go1 → Mini Cheetah | Go1 → Go1 | Go1 → A1 | Go1 → Go2 |
-|---|---|---|---|---|
-| <img src="media/gifs/rich_go1_to_solo12.gif" width="180"><br><sub>**fell**</sub> | <img src="media/gifs/rich_go1_to_mini_cheetah.gif" width="180"><br><sub>drift 0.01 m (works)</sub> | <img src="media/gifs/rich_go1_to_go1.gif" width="180"><br><sub>drift 0.01 m (works)</sub> | <img src="media/gifs/rich_go1_to_a1.gif" width="180"><br><sub>drift 0.03 m (works)</sub> | <img src="media/gifs/rich_go1_to_go2.gif" width="180"><br><sub>drift 0.01 m (works)</sub> |
-| **Go1 → Aliengo** | **Go1 → Laikago** | **Go1 → ANYmal B** | **Go1 → ANYmal C** | **Go1 → B1** |
-| <img src="media/gifs/rich_go1_to_aliengo.gif" width="180"><br><sub>drift 0.02 m (works)</sub> | <img src="media/gifs/rich_go1_to_laikago.gif" width="180"><br><sub>drift 0.05 m (works)</sub> | <img src="media/gifs/rich_go1_to_anymal_b.gif" width="180"><br><sub>drift 0.21 m (works)</sub> | <img src="media/gifs/rich_go1_to_anymal_c.gif" width="180"><br><sub>drift 0.15 m (works)</sub> | <img src="media/gifs/rich_go1_to_b1.gif" width="180"><br><sub>drift 0.11 m (works)</sub> |
-| **Go1 → B2** | **Go1 → HyQ** | **Go1 → HyQReal** |  |  |
-| <img src="media/gifs/rich_go1_to_b2.gif" width="180"><br><sub>drift 0.08 m (works)</sub> | <img src="media/gifs/rich_go1_to_hyq.gif" width="180"><br><sub>drift 0.27 m (degraded)</sub> | <img src="media/gifs/rich_go1_to_hyqreal.gif" width="180"><br><sub>drift 0.12 m (works)</sub> |  |  |
-
-Every robot's native run, and every MP4 above at full length, is in [`media/videos/`](media/videos). Any other pair from the matrix can be rendered with `transfer.py --video` (see [Reproducing](#reproducing-everything)).
-
-### Original screen recordings (January 2025)
-
-These are the screen recordings made when the work was first done, using the interactive `simulation.py` (keyboard/joystick velocity commands). They are kept as-is.
-
-| Go1 → Go1 | Go1 → Go1 (randomised dynamics) | Go1 → B2 | Go1 → HyQReal |
-|---|---|---|---|
-| <img src="media/original_2025-01/go1_to_go1.gif" width="200"> | <img src="media/original_2025-01/go1_to_go1_randomized.gif" width="200"> | <img src="media/original_2025-01/go1_to_b2.gif" width="200"> | <img src="media/original_2025-01/go1_to_hyqreal.gif" width="200"> |
-
-In January 2025 the slides listed Go1 → B2 and Go1 → HyQReal as failures. In the original recordings and in these reruns, that failure is large path error and heading drift, not a fall.
-
----
-
-## Part B: robots and tables
-
-#### Part B: the 13 robots, each under its own NMPC (20 s rich command profile)
-
-| robot | family | mass [kg] | controller mass [kg] | hip height [m] | torque limit [N·m] | knees (front/rear) | I_xx, I_yy, I_zz [kg·m²] | own run | video |
-|---|---|---|---|---|---|---|---|---|---|
-| solo12 | ODRI | 2.5 | 2.5 | 0.23 | 3 | back/front | 0.03, 0.05, 0.07 | completes | [mp4](media/videos/native_solo12.mp4) |
-| mini_cheetah | MIT | 12.5 | 12.5 | 0.23 | 31 | back/back | 0.15, 0.36, 0.40 | completes | [mp4](media/videos/native_mini_cheetah.mp4) |
-| go1 | Unitree | 12.7 | 12.0 ⚠ | 0.30 | 45 | back/back | 0.15, 0.40, 0.42 | completes | [mp4](media/videos/native_go1.mp4) |
-| a1 | Unitree | 13.7 | 13.7 | 0.27 | 34 | back/back | 0.15, 0.37, 0.39 | completes | [mp4](media/videos/native_a1.mp4) |
-| go2 | Unitree | 15.2 | 24.0 ⚠ | 0.28 | 31 | back/back | 0.20, 0.51, 0.53 | completes | [mp4](media/videos/native_go2.mp4) |
-| aliengo | Unitree | 24.6 | 24.0 | 0.35 | 38 | back/back | 0.26, 0.91, 0.92 | completes | [mp4](media/videos/native_aliengo.mp4) |
-| laikago | Unitree | 25.4 | 25.4 | 0.40 | 43 | back/back | 0.45, 1.02, 1.04 | completes | [mp4](media/videos/native_laikago.mp4) |
-| anymal_b | ANYbotics | 30.5 | 30.5 | 0.51 | 80 | back/front | 0.99, 2.01, 2.03 | completes | [mp4](media/videos/native_anymal_b.mp4) |
-| anymal_c | ANYbotics | 52.1 | 52.1 | 0.56 | 80 | back/front | 1.75, 4.75, 4.68 | completes | [mp4](media/videos/native_anymal_c.mp4) |
-| b1 | Unitree | 55.7 | 55.7 | 0.53 | 108 | back/back | 1.63, 5.24, 5.12 | completes | [mp4](media/videos/native_b1.mp4) |
-| b2 | Unitree | 83.5 | 83.5 | 0.48 | 233 | back/back | 1.83, 7.17, 7.60 | completes | [mp4](media/videos/native_b2.mp4) |
-| hyq | IIT | 86.8 | 86.8 | 0.60 | 150 | back/front | 4.19, 11.72, 12.69 | completes | [mp4](media/videos/native_hyq.mp4) |
-| hyqreal | IIT | 107.6 | 108.4 | 0.50 | 210 | back/back | 4.76, 20.69, 21.32 | completes | [mp4](media/videos/native_hyqreal.mp4) |
-
-#### Part B: the original Jan-2025 Go1 recording (human-driven, 40 s) replayed on every robot
-
-| target | survived | mean abs x err [m] | mean abs y err [m] | mean abs z err [m] | Σ error (x+y+z) | video |
-|---|---|---|---|---|---|---|
-| quadDoggo | yes (40 s) | 0.011 | 0.021 | 0.003 | 710 | [mp4](media/videos/original_go1_to_quadDoggo.mp4) |
-| go1 | yes (40 s) | 0.011 | 0.021 | 0.003 | 710 | [mp4](media/videos/original_go1_to_go1.mp4) |
-| anymal_b | yes (40 s) | 0.036 | 0.036 | 0.010 | 1642 | [mp4](media/videos/original_go1_to_anymal_b.mp4) |
-| aliengo | yes (40 s) | 0.015 | 0.068 | 0.003 | 1721 | [mp4](media/videos/original_go1_to_aliengo.mp4) |
-| go2 | yes (40 s) | 0.037 | 0.017 | 0.044 | 1966 | [mp4](media/videos/original_go1_to_go2.mp4) |
-| solo12 | yes (40 s) | 0.068 | 0.034 | 0.007 | 2189 | [mp4](media/videos/original_go1_to_solo12.mp4) |
-| laikago | yes (40 s) | 0.070 | 0.058 | 0.005 | 2667 | [mp4](media/videos/original_go1_to_laikago.mp4) |
-| go1_perturbed | yes (40 s) | 0.104 | 0.055 | 0.014 | 3457 | [mp4](media/videos/original_go1_to_go1_perturbed.mp4) |
-| anymal_c | yes (40 s) | 0.071 | 0.117 | 0.011 | 3981 | [mp4](media/videos/original_go1_to_anymal_c.mp4) |
-| b2 | yes (40 s) | 0.100 | 0.176 | 0.014 | 5812 | [mp4](media/videos/original_go1_to_b2.mp4) |
-| mini_cheetah | yes (40 s) | 0.213 | 0.097 | 0.006 | 6322 | [mp4](media/videos/original_go1_to_mini_cheetah.mp4) |
-| a1 | yes (40 s) | 0.243 | 0.131 | 0.002 | 7536 | [mp4](media/videos/original_go1_to_a1.mp4) |
-| b1 | yes (40 s) | 0.220 | 0.194 | 0.007 | 8417 | [mp4](media/videos/original_go1_to_b1.mp4) |
-| hyqreal | yes (40 s) | 0.542 | 0.593 | 0.012 | 22944 | [mp4](media/videos/original_go1_to_hyqreal.mp4) |
-| hyq | yes (40 s) | 0.352 | 0.869 | 0.018 | 24806 | [mp4](media/videos/original_go1_to_hyq.mp4) |
-
-*Error columns* (original recording): the mean absolute deviation per 2 ms step from the Go1 source's base path in x and y, and from the commanded height in z. The Σ column is the error $E$ defined [below](#what-transfer-means). ⚠ marks a controller mass that differs from the model mass by more than 5 %. This is upstream Go2 configuration, kept unchanged.
-
----
-
-## Part A: results
-
-#### Part A: jump (1 m forward, 0.5 m CoM rise)
-
-| run | formulation | converged (iters) | mass [kg] | final base x [m] | peak abs τ [N·m] | Σ abs τ [N·m] | max abs τ / limit | pre-launch CoM margin [m] |
-|---|---|---|---|---|---|---|---|---|
-| `anymal` | inverse | True (40) | 52.13 | 1.011 | 396 | 17736 | 4.95 | +0.308 |
-| `anymal_fwd` | forward | True (43) | 52.13 | 1.011 | 396 | 17736 | 4.95 | +0.308 |
-| `anymal_same` | inverse | True (29) | 9.07 | 1.010 | 154 | 3722 | 1.92 | +0.266 |
-| `b1` | inverse | True (10) | 55.69 | 1.015 | 427 | 21137 | 3.05 | +0.259 |
-| `b1_same` | inverse | True (8) | 9.07 | 0.977 | 178 | 3547 | 2.22 | +0.286 |
-| `go1` | inverse | True (9) | 13.10 | 1.035 | 178 | 3118 | 5.00 | +0.141 |
-| `go1_same` | inverse | True (8) | 9.07 | 1.023 | 176 | 3597 | 2.20 | +0.131 |
-| `hyq` | inverse | True (11) | 86.77 | 0.959 | 451 | 31808 | 3.01 | +0.267 |
-| `hyq_same` | inverse | True (11) | 9.07 | 0.958 | 146 | 3752 | 1.82 | +0.279 |
-| `talos` | inverse | True (74) | 90.27 | 0.914 | 1893 | 31848 | 6.31 | +0.008 |
-| `talos_fwd` | forward | True (48) | 90.27 | 0.914 | 1893 | 31848 | 6.31 | +0.008 |
-| `talos_same` | inverse | True (27) | 9.07 | 0.977 | 328 | 3491 | 4.10 | +0.008 |
-
-Jump videos (stick-figure side view of the optimised trajectory):
-
-| ANYmal | Talos legs | Go1 | B1 | HyQ |
-|---|---|---|---|---|
-| <img src="media/gifs/jump_anymal.gif" width="150"> | <img src="media/gifs/jump_talos.gif" width="150"> | <img src="media/gifs/jump_go1.gif" width="150"> | <img src="media/gifs/jump_b1.gif" width="150"> | <img src="media/gifs/jump_hyq.gif" width="150"> |
-
-<p align="center"><img src="results/jump/fig_quadruped_vs_humanoid_torques.png" width="90%"></p>
-<p align="center"><img src="results/jump/fig_effort_by_robot.png" width="90%"></p>
 
 ---
 
@@ -311,9 +329,9 @@ The converter keeps the URDF's kinematics, masses, inertias, joint limits and ef
 ## Reproducing everything
 
 ```bash
-# Part A: 12 trajectory optimisations (~2 min), torque plots, stick-figure videos
+# Part A: 12 trajectory optimisations (~2 min), torque plots, mesh-rendered videos
 conda activate xfer-trajopt
-bash trajopt/run_jumps.sh && (cd trajopt && python make_figures.py ../results/jump)
+bash trajopt/run_jumps.sh && (cd trajopt && python make_figures.py ../results/jump)   # also renders media/*/jump_*
 
 # Part B: ~950 simulations (~25 min on 32 cores) + analysis + tables
 source deps/env.sh
@@ -351,7 +369,7 @@ where $M$ is the joint-space inertia matrix, $h$ collects Coriolis, centrifugal 
 
 ### Inverse-dynamics direct transcription
 
-Instead of integrating forward dynamics $\dot v = \mathrm{FD}(q,v,\tau,\lambda)$, we follow Ferrolho et al. (2021) and make accelerations and forces the decision variables. On a grid $t_k = k\,h$, $h = 10$ ms:
+Instead of integrating forward dynamics $\dot v = \mathrm{FD}(q,v,\tau,\lambda)$, I follow Ferrolho et al. (2021) and make accelerations and forces the decision variables. On a grid $t_k = k\,h$, $h = 10$ ms:
 
 $$
 \dot v^\*_k = \frac{v_{k+1}-v_k}{h}, \qquad
@@ -438,21 +456,21 @@ where $M_i$ and $h_i$ are the leg's block of the mass matrix and bias forces ($K
 
 ### What "transfer" means
 
-On the **source** robot we record, at every 2 ms step, the controller's model of itself:
+On the **source** robot I record, at every 2 ms step, the controller's model of itself:
 
 $$
 \mathcal{S}_k = \big(\,v^{\text{ref}}_k,\;\omega^{\text{ref}}_k,\;\{h_i\}_k,\;\{M_i\}_k,\;I_k,\;p^{\text{base}}_k\,\big).
 $$
 
-On the **target** robot we run the same controller, but replace its references, leg bias forces, leg mass matrices and base inertia with $\mathcal{S}_k$. The NMPC keeps the **target's own mass** $m$. The target's *kinematics* (foot positions, Jacobians, base state) are still measured from the target in MuJoCo. The controller therefore steers the target with the source's dynamics model.
+On the **target** robot I run the same controller, but replace its references, leg bias forces, leg mass matrices and base inertia with $\mathcal{S}_k$. The NMPC keeps the **target's own mass** $m$. The target's *kinematics* (foot positions, Jacobians, base state) are still measured from the target in MuJoCo. The controller therefore steers the target with the source's dynamics model.
 
-Each joint gets Gaussian torque noise ($\sigma$ = 4.4 % of its limit; 2 N·m on Go1, as in the original experiment). For the original recording we report the tracking error against the source's base path,
+Each joint gets Gaussian torque noise ($\sigma$ = 4.4 % of its limit; 2 N·m on Go1, as in the original experiment). For the original recording I report the tracking error against the source's base path,
 
 $$
 E = \sum_k \lvert x_k - x^{\text{src}}_k\rvert + \lvert y_k - y^{\text{src}}_k\rvert + \lvert z^{\text{ref}}_k - z_k\rvert ,
 $$
 
-per axis as a mean per step. For the matrix we report the drift from the target's own native run, $\frac{1}{K}\sum_k \lVert p^{xy}_k - p^{xy,\text{native}}_k\rVert$. This separates "the wrong model hurt" from "this robot simply walks the commands differently".
+per axis as a mean per step. For the matrix I report the drift from the target's own native run, $\frac{1}{K}\sum_k \lVert p^{xy}_k - p^{xy,\text{native}}_k\rVert$. This separates "the wrong model hurt" from "this robot simply walks the commands differently".
 
 Mismatch measures, all computed from what each robot's controller actually used, averaged over its native run:
 - inertia ratio: $\big(\prod_a I_{\text{src},aa}/I_{\text{tgt},aa}\big)^{1/3}$;
@@ -467,7 +485,7 @@ Mismatch measures, all computed from what each robot's controller actually used,
 - **Part A was re-implemented.** The original Dec 2024 jump code could not be recovered, so `trajopt/jump.py` rebuilds the experiment from the slides with Crocoddyl's quadruped/biped jumping problems. The formulation, phases and constraints match the slides; the numbers are from this re-implementation.
 - **Torque limits are not enforced in Part A.** Crocoddyl's jumping problem penalises state bounds but not actuator limits, so `max |τ| / limit` exceeds 1 for every robot. The results show *how much* torque each body needs for this jump, not that the jump is feasible on hardware.
 - **Humanoid stability.** The slides argued that the humanoid's pre-launch CoM lies outside its support. In this re-implementation, with a 20 cm-long sole, it sits **8 mm inside** the support edge. That is marginal but not outside.
-- **Imported robots are simplified.** The seven `example-robot-data` robots keep exact URDF kinematics, masses, inertias and limits. Their collision geometry is approximate (capsules and spheres). Joint damping, friction and armature are scaled from Go1's values, because URDFs don't carry them. Solo-12's URDF lists a placeholder 1000 N·m effort limit, so we use ODRI's ~2.7 N·m. Laikago has no SRDF, so its standing pose is solved for.
+- **Imported robots are simplified.** The seven `example-robot-data` robots keep exact URDF kinematics, masses, inertias and limits. Their collision geometry is approximate (capsules and spheres). Joint damping, friction and armature are scaled from Go1's values, because URDFs don't carry them. Solo-12's URDF lists a placeholder 1000 N·m effort limit, so I use ODRI's ~2.7 N·m. Laikago has no SRDF, so its standing pose is solved for.
 - **Bugs fixed relative to the Jan-2025 code:**
   - `quadDoggo` had no entry in the controller's tables and an Aliengo mass and hip height. It is a renamed copy of the Go1 model, so it now uses Go1's parameters, and its results match Go1's exactly (a useful sanity check).
   - Mini Cheetah's `qpos0_js` override rotated every thigh by 90°, because MuJoCo measures hinge angles relative to `qpos0`, and the robot fell after 0.1 s. Removing the override fixes it.
@@ -484,6 +502,7 @@ Mismatch measures, all computed from what each robot's controller actually used,
 ```
 trajopt/
   jump.py                 Part A: jump trajectory optimisation (Pinocchio + Crocoddyl)
+  render_jump.py          Part A: full-mesh render of a solved jump (Pinocchio kinematics, pyrender rasteriser)
   run_jumps.sh, make_figures.py
 mpc_transfer/
   Quadruped-PyMPC/        vendored IIT-DLS Quadruped-PyMPC (BSD-3) with the transfer changes
@@ -511,7 +530,7 @@ CITATION.bib
 This project is built on, and would not exist without:
 
 - **[MuJoCo](https://mujoco.org/)** (Todorov et al.): physics simulation for Part B.
-- **[Pinocchio](https://github.com/stack-of-tasks/pinocchio)** (Carpentier et al.) and **[Crocoddyl](https://github.com/loco-3d/crocoddyl)** (Mastalli et al.): rigid-body dynamics, analytical derivatives and the DDP solvers for Part A.
+- **[Pinocchio](https://github.com/stack-of-tasks/pinocchio)** (Carpentier et al.) and **[Crocoddyl](https://github.com/loco-3d/crocoddyl)** (Mastalli et al.): rigid-body dynamics, analytical derivatives and the DDP solvers for Part A; Pinocchio also poses the meshes in the Part A videos (rasterised with [pyrender](https://github.com/mmatl/pyrender)).
 - **[Quadruped-PyMPC](https://github.com/iit-DLSLab/Quadruped-PyMPC)** and **[gym-quadruped](https://github.com/iit-DLSLab/gym-quadruped)** (Turrisi et al., IIT Dynamic Legged Systems Lab): the NMPC and MuJoCo environment that Part B modifies. The vendored copy keeps its BSD-3 license.
 - **[acados](https://github.com/acados/acados)** (Verschueren et al.) with HPIPM/BLASFEO: the NMPC solver.
 - **[example-robot-data](https://github.com/Gepetto/example-robot-data)**: robot models for Part A and the seven imported quadrupeds. The robots themselves are from Unitree, ANYbotics, IIT, MIT and the Open Dynamic Robot Initiative.
@@ -534,6 +553,8 @@ If you find this useful, you can cite it as a blog post:
 ```
 
 Please also cite the tools above. Their BibTeX entries are in [`CITATION.bib`](CITATION.bib).
+
+---
 
 ## License
 

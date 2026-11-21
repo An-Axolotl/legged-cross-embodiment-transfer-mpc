@@ -16,7 +16,7 @@ Outputs (in --out):
   <tag>.json       summary (convergence, cost, peak torque, total |tau|, CoM margin)
   <tag>_tau.png    per-joint torque profiles
   <tag>_tau.npz    raw trajectories
-  <tag>.mp4        stick-figure animation of the optimal jump
+  <tag>.mp4        quick stick-figure preview (the README videos come from render_jump.py)
 """
 import argparse
 import json

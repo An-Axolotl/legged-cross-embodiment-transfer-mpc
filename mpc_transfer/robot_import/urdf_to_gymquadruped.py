@@ -206,7 +206,7 @@ def main():
     root.set("model", a.name)
     for e in root.findall("compiler"):
         e.set("angle", "radian"); e.set("autolimits", "true")
-        # masses/inertias come only from the URDF <inertial> tags, never from the approximate geometry we add
+        # masses/inertias come only from the URDF <inertial> tags, never from the approximate geometry added here
         e.set("inertiafromgeom", "false")
     opt = root.find("option") if root.find("option") is not None else ET.Element("option")
     opt.set("cone", "elliptic"); opt.set("impratio", "100")

@@ -3,10 +3,10 @@ and writes results/analysis/ (figures, summary.json, tables.md).
 
     source deps/env.sh && python analysis/analyze.py
 
-Per robot we take the quantities that the transfer actually swaps, time-averaged over the robot's own
+Per robot I take the quantities that the transfer actually swaps, time-averaged over the robot's own
 native run (results/native/native_<r>.npz): base inertia I (3x3, from MuJoCo's mass matrix), leg mass
 matrices M_leg (4 x 3x3), leg bias forces h_leg (4 x 3, mostly gravity), plus mass, hip height and torque
-limits from the model/config.  For a source s and target t we measure how wrong each injected term is
+limits from the model/config.  For a source s and target t I measure how wrong each injected term is
 *from the target's point of view* and relate it to what happened.
 """
 import glob
@@ -29,7 +29,7 @@ from run_experiments import ROBOTS  # noqa: E402
 FAMILY = {"go1": "Unitree", "go2": "Unitree", "a1": "Unitree", "aliengo": "Unitree", "laikago": "Unitree",
           "b1": "Unitree", "b2": "Unitree", "mini_cheetah": "MIT", "anymal_b": "ANYbotics", "anymal_c": "ANYbotics",
           "hyq": "IIT", "hyqreal": "IIT", "solo12": "ODRI"}
-WORKS_DRIFT = 0.25   # [m] mean planar drift from the target's own native run, below which we call a transfer "works"
+WORKS_DRIFT = 0.25   # [m] mean planar drift from the target's own native run, below which I call a transfer "works"
 
 
 # ----------------------------------------------------------------------------------------------- robot features
