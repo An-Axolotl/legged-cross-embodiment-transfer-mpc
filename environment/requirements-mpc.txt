@@ -1,0 +1,16 @@
+# Part B (MPC transfer, MuJoCo + acados). Versions used for the published results.
+mujoco==3.1.1
+casadi==3.8.2
+numpy==2.4.6
+scipy==1.17.1
+matplotlib==3.11.2
+gymnasium==1.4.0
+liecasadi==0.0.7
+adam-robotics[casadi]==0.3.0
+readchar==4.2.2
+noise==1.2.2
+tqdm==4.70.1
+imageio==2.38.2
+imageio-ffmpeg==0.8.1
+opencv-python-headless==5.1.0.95
+scikit-learn==1.6.1   # analysis only

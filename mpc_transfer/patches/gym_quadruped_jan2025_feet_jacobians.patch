@@ -1,0 +1,47 @@
+--- gym_quadruped/quadruped_env.py	2026-11-20 21:46:00.377987434 -0800
++++ gym_quadruped/quadruped_env.py	2025-01-16 03:07:06.000000000 -0800
+@@ -667,6 +667,44 @@
+         feet_rot_jac = LegsAttr(*[np.zeros((3, self.mjModel.nv)) if not return_rot_jac else None for _ in range(4)])
+         feet_pos = self.feet_pos(frame='world')  # Mujoco mj_jac expects the point in global coordinates.
+ 
++        import pickle
++        with open('feet_jacobians.pkl', 'ab') as f:  # Open file in append-binary mode
++            pickle.dump((feet_trans_jac, feet_rot_jac), f)
++
++        for leg_name in ["FR", "FL", "RR", "RL"]:
++            mujoco.mj_jac(m=self.mjModel,
++                          d=self.mjData,
++                          jacp=feet_trans_jac[leg_name],
++                          jacr=feet_rot_jac[leg_name],
++                          point=feet_pos[leg_name],  # Point in global coordinates
++                          body=self._feet_body_id[leg_name]  # Body to which `point` is attached to.
++                          )
++            feet_trans_jac[leg_name] = R.T @ feet_trans_jac[leg_name]
++            if return_rot_jac:
++                feet_rot_jac[leg_name] = R.T @ feet_rot_jac[leg_name]
++
++        return feet_trans_jac if not return_rot_jac else (feet_trans_jac, feet_rot_jac)
++    
++    def feet_jacobians_new(self, t, data, frame: str = 'world', return_rot_jac: bool = False) -> LegsAttr | tuple[LegsAttr, ...]:
++        """Compute the Jacobians of the feet positions from older dynamics
++        """
++        if any(x is None for x in self._feet_body_id.to_list()):
++            raise ValueError(
++                "Please provide the `feet_geom_name` argument in the Env constructor to compute feet Jacobians."
++                )
++
++        if frame == 'world':
++            R = np.eye(3)
++        elif frame == 'base':
++            R = self.base_configuration[0:3, 0:3]
++        else:
++            raise ValueError(f"Invalid frame: {frame} != 'world' or 'base'")
++        
++        # Retrieve the data for the requested time step
++        feet_trans_jac, feet_rot_jac = data[t]
++        
++        feet_pos = self.feet_pos(frame='world')  # Mujoco mj_jac expects the point in global coordinates.
++
+         for leg_name in ["FR", "FL", "RR", "RL"]:
+             mujoco.mj_jac(m=self.mjModel,
+                           d=self.mjData,

@@ -1,0 +1,11 @@
+# Part A (jump trajectory optimisation, Pinocchio + Crocoddyl)
+name: xfer-trajopt
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - pinocchio=3.4.0
+  - crocoddyl=3.0.1
+  - example-robot-data
+  - numpy=2.4
+  - matplotlib=3.10
+  - ffmpeg

@@ -1,0 +1,8 @@
+deps/
+__pycache__/
+*.egg-info/
+c_generated_code/
+*.pkl
+runs/
+MUJOCO_LOG.TXT
+*.json.bak

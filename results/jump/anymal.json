@@ -1,0 +1,26 @@
+{
+ "robot": "anymal",
+ "same": false,
+ "formulation": "inverse",
+ "mass_kg": 52.13,
+ "converged": true,
+ "iterations": 40,
+ "cost": 11840.91,
+ "knots": 110,
+ "final_base_xyz": [
+  1.011,
+  0.0,
+  0.533
+ ],
+ "peak_abs_tau_Nm": 396.2,
+ "total_abs_tau_Nm": 17736.1,
+ "total_abs_tau_impulse_Nms": 177.36,
+ "max_tau_over_limit": 4.95,
+ "base_wrench_residual_max": 2.4614024943505897e-12,
+ "prelaunch_com_x": 0.051,
+ "prelaunch_feet_x": [
+  -0.361,
+  0.359
+ ],
+ "prelaunch_com_margin_m": 0.308
+}

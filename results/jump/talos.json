@@ -1,0 +1,26 @@
+{
+ "robot": "talos",
+ "same": false,
+ "formulation": "inverse",
+ "mass_kg": 90.27,
+ "converged": true,
+ "iterations": 74,
+ "cost": 59542.85,
+ "knots": 97,
+ "final_base_xyz": [
+  0.914,
+  -0.001,
+  0.985
+ ],
+ "peak_abs_tau_Nm": 1892.6,
+ "total_abs_tau_Nm": 31848.0,
+ "total_abs_tau_impulse_Nms": 318.48,
+ "max_tau_over_limit": 6.31,
+ "base_wrench_residual_max": 2.2067517375377359e-10,
+ "prelaunch_com_x": 0.079,
+ "prelaunch_feet_x": [
+  -0.113,
+  0.087
+ ],
+ "prelaunch_com_margin_m": 0.008
+}

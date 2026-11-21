@@ -1,0 +1,372 @@
+<robot name="hyq">
+  <material name="white">
+    <color rgba="1 1 1 1" />
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1" />
+  </material>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <joint name="floating_base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <parent link="base_link" />
+    <child link="trunk" />
+  </joint>
+  
+  
+  <link name="base_link">
+    <inertial>
+      <mass value="1e-6" />
+      <inertia ixx="1e-6" ixy="1e-6" ixz="1e-6" iyy="1e-6" iyz="1e-6" izz="1e-6" />
+    </inertial>
+    </link>
+  
+  <link name="trunk">
+    <inertial>
+      <origin xyz="0.056 0.0215 0.00358" />
+      <mass value="60.96" />
+      <inertia ixx="1.5725937" ixy="0.028375" ixz="-0.203139" iyy="8.5015928" iyz="-0.004462" izz="9.1954911" />
+    </inertial>
+    </link>
+  
+  <joint name="FL_hip_joint" type="revolute">
+    <origin rpy="0 1.57079632679 3.14159265359" xyz="0.3735 0.207 0" />
+    <parent link="trunk" />
+    <child link="FL_hip" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-1.2217304764" upper="0.436332312999" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-1.2217304764" soft_upper_limit="0.436332312999" />
+  </joint>
+  
+  <joint name="FL_thigh_joint" type="revolute">
+    <origin rpy="1.57079632679 0 0" xyz="0.08 0 0" />
+    <parent link="FL_hip" />
+    <child link="lf_upperleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-0.872664625997" upper="1.2217304764" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-0.872664625997" soft_upper_limit="1.2217304764" />
+  </joint>
+  
+  <joint name="FL_calf_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0.35 0 0" />
+    <parent link="lf_upperleg" />
+    <child link="lf_lowerleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-2.44346095279" upper="-0.349065850399" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-2.44346095279" soft_upper_limit="-0.349065850399" />
+    
+  </joint>
+  <joint name="lf_foot_joint" type="fixed">
+    <origin rpy="1.57079632679 0 -1.57079632679" xyz="0.346 0 0" />
+    <parent link="lf_lowerleg" />
+    <child link="FL_foot" />
+  </joint>
+  
+  
+  <link name="FL_hip">
+    <inertial>
+      <origin xyz="0.04263         0.0         0.16931" />
+      <mass value="2.93" />
+      <inertia ixx="0.05071" ixy="-4e-05" ixz="-0.00159" iyy="0.05486" iyz="-5e-05" izz="0.00571" />
+    </inertial>
+    </link>
+  
+  <link name="lf_upperleg">
+    <inertial>
+      <origin xyz="0.15074 -0.02625 0.0" />
+      <mass value="2.638" />
+      <inertia ixx="0.00368" ixy="-0.00302" ixz="0.0001" iyy="0.02719" iyz="2e-05" izz="0.02811" />
+    </inertial>
+    </link>
+  
+  <link name="lf_lowerleg">
+    <inertial>
+      <origin xyz="0.1254 4e-05 -0.0001" />
+      <mass value="0.881" />
+      <inertia ixx="0.00047" ixy="6e-05" ixz="-1e-05" iyy="0.01256" iyz="-0.0" izz="0.01233" />
+    </inertial>
+    </link>
+  
+  <link name="FL_foot">
+    <contact>
+      <lateral_friction value="1" />
+      <stiffness value="30000" />
+      <damping value="1000" />
+    </contact>
+    <inertial>
+      <mass value="1e-6" />
+      <inertia ixx="1e-6" ixy="1e-6" ixz="1e-6" iyy="1e-6" iyz="1e-6" izz="1e-6" />
+    </inertial>
+    </link>
+  
+  
+  <joint name="FR_hip_joint" type="revolute">
+    <origin rpy="0 1.57079632679 0" xyz="0.3735 -0.207 0" />
+    <parent link="trunk" />
+    <child link="FR_hip" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-1.2217304764" upper="0.436332312999" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-1.2217304764" soft_upper_limit="0.436332312999" />
+  </joint>
+  
+  <joint name="FR_thigh_joint" type="revolute">
+    <origin rpy="-1.57079632679 0 0" xyz="0.08 0 0" />
+    <parent link="FR_hip" />
+    <child link="rf_upperleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-0.872664625997" upper="1.2217304764" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-0.872664625997" soft_upper_limit="1.2217304764" />
+  </joint>
+  
+  <joint name="FR_calf_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0.35 0 0" />
+    <parent link="rf_upperleg" />
+    <child link="rf_lowerleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-2.44346095279" upper="-0.349065850399" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-2.44346095279" soft_upper_limit="-0.349065850399" />
+    
+  </joint>
+  <joint name="rf_foot_joint" type="fixed">
+    <origin rpy="1.57079632679 0 -1.57079632679" xyz="0.346 0 0" />
+    <parent link="rf_lowerleg" />
+    <child link="FR_foot" />
+  </joint>
+  
+  
+  <link name="FR_hip">
+    <inertial>
+      <origin xyz="0.04263         -0.0         -0.16931" />
+      <mass value="2.93" />
+      <inertia ixx="0.05071" ixy="4e-05" ixz="0.00159" iyy="0.05486" iyz="-5e-05" izz="0.00571" />
+    </inertial>
+    </link>
+  
+  <link name="rf_upperleg">
+    <inertial>
+      <origin xyz="0.15074 -0.02625 0.0" />
+      <mass value="2.638" />
+      <inertia ixx="0.00368" ixy="-0.00302" ixz="0.0001" iyy="0.02719" iyz="2e-05" izz="0.02811" />
+    </inertial>
+    </link>
+  
+  <link name="rf_lowerleg">
+    <inertial>
+      <origin xyz="0.1254 4e-05 -0.0001" />
+      <mass value="0.881" />
+      <inertia ixx="0.00047" ixy="6e-05" ixz="-1e-05" iyy="0.01256" iyz="-0.0" izz="0.01233" />
+    </inertial>
+    </link>
+  
+  <link name="FR_foot">
+    <contact>
+      <lateral_friction value="1" />
+      <stiffness value="30000" />
+      <damping value="1000" />
+    </contact>
+    <inertial>
+      <mass value="1e-6" />
+      <inertia ixx="1e-6" ixy="1e-6" ixz="1e-6" iyy="1e-6" iyz="1e-6" izz="1e-6" />
+    </inertial>
+    </link>
+  
+  
+  <joint name="RL_hip_joint" type="revolute">
+    <origin rpy="0 1.57079632679 3.14159265359" xyz="-0.3735 0.207 0" />
+    <parent link="trunk" />
+    <child link="RL_hip" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-1.2217304764" upper="0.436332312999" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-1.2217304764" soft_upper_limit="0.436332312999" />
+  </joint>
+  
+  <joint name="RL_thigh_joint" type="revolute">
+    <origin rpy="1.57079632679 0 0" xyz="0.08 0 0" />
+    <parent link="RL_hip" />
+    <child link="lh_upperleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-1.2217304764" upper="0.872664625997" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-1.2217304764" soft_upper_limit="0.872664625997" />
+  </joint>
+  
+  <joint name="RL_calf_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0.35 0 0" />
+    <parent link="lh_upperleg" />
+    <child link="lh_lowerleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="0.349065850399" upper="2.44346095279" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="0.349065850399" soft_upper_limit="2.44346095279" />
+    
+  </joint>
+  <joint name="lh_foot_joint" type="fixed">
+    <origin rpy="1.57079632679 0 -1.57079632679" xyz="0.346 0 0" />
+    <parent link="lh_lowerleg" />
+    <child link="RL_foot" />
+  </joint>
+  
+  
+  <link name="RL_hip">
+    <inertial>
+      <origin xyz="0.04263         -0.0         -0.16931" />
+      <mass value="2.93" />
+      <inertia ixx="0.05071" ixy="4e-05" ixz="0.00159" iyy="0.05486" iyz="-5e-05" izz="0.00571" />
+    </inertial>
+    </link>
+  
+  <link name="lh_upperleg">
+    <inertial>
+      <origin xyz="0.15074 0.02625 0.0" />
+      <mass value="2.638" />
+      <inertia ixx="0.00368" ixy="0.00302" ixz="-0.0001" iyy="0.02719" iyz="2e-05" izz="0.02811" />
+    </inertial>
+    </link>
+  
+  <link name="lh_lowerleg">
+    <inertial>
+      <origin xyz="0.1254 -4e-05 0.0001" />
+      <mass value="0.881" />
+      <inertia ixx="0.00047" ixy="-6e-05" ixz="1e-05" iyy="0.01256" iyz="-0.0" izz="0.01233" />
+    </inertial>
+    </link>
+  
+  <link name="RL_foot">
+    <contact>
+      <lateral_friction value="1" />
+      <stiffness value="30000" />
+      <damping value="1000" />
+    </contact>
+    <inertial>
+      <mass value="1e-6" />
+      <inertia ixx="1e-6" ixy="1e-6" ixz="1e-6" iyy="1e-6" iyz="1e-6" izz="1e-6" />
+    </inertial>
+    </link>
+  
+  
+  <joint name="RR_hip_joint" type="revolute">
+    <origin rpy="0 1.57079632679 0" xyz="-0.3735 -0.207 0" />
+    <parent link="trunk" />
+    <child link="RR_hip" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-1.2217304764" upper="0.436332312999" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-1.2217304764" soft_upper_limit="0.436332312999" />
+  </joint>
+  
+  <joint name="RR_thigh_joint" type="revolute">
+    <origin rpy="-1.57079632679 0 0" xyz="0.08 0 0" />
+    <parent link="RR_hip" />
+    <child link="rh_upperleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="-1.2217304764" upper="0.872664625997" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="-1.2217304764" soft_upper_limit="0.872664625997" />
+  </joint>
+  
+  <joint name="RR_calf_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0.35 0 0" />
+    <parent link="rh_upperleg" />
+    <child link="rh_lowerleg" />
+    <axis xyz="0 0 1" />
+    <limit effort="150" lower="0.349065850399" upper="2.44346095279" velocity="12.0" />
+    <dynamics damping="0.1" friction="0" />
+    <safety_controller k_position="50" k_velocity="10" soft_lower_limit="0.349065850399" soft_upper_limit="2.44346095279" />
+    
+  </joint>
+  <joint name="rh_foot_joint" type="fixed">
+    <origin rpy="1.57079632679 0 -1.57079632679" xyz="0.346 0 0" />
+    <parent link="rh_lowerleg" />
+    <child link="RR_foot" />
+  </joint>
+  
+  
+  <link name="RR_hip">
+    <inertial>
+      <origin xyz="0.04263         0.0         0.16931" />
+      <mass value="2.93" />
+      <inertia ixx="0.05071" ixy="-4e-05" ixz="-0.00159" iyy="0.05486" iyz="-5e-05" izz="0.00571" />
+    </inertial>
+    </link>
+  
+  <link name="rh_upperleg">
+    <inertial>
+      <origin xyz="0.15074 0.02625 0.0" />
+      <mass value="2.638" />
+      <inertia ixx="0.00368" ixy="0.00302" ixz="-0.0001" iyy="0.02719" iyz="2e-05" izz="0.02811" />
+    </inertial>
+    </link>
+  
+  <link name="rh_lowerleg">
+    <inertial>
+      <origin xyz="0.1254 -4e-05 0.0001" />
+      <mass value="0.881" />
+      <inertia ixx="0.00047" ixy="-6e-05" ixz="1e-05" iyy="0.01256" iyz="-0.0" izz="0.01233" />
+    </inertial>
+    </link>
+  
+  <link name="RR_foot">
+    <contact>
+      <lateral_friction value="1" />
+      <stiffness value="30000" />
+      <damping value="1000" />
+    </contact>
+    <inertial>
+      <mass value="1e-6" />
+      <inertia ixx="1e-6" ixy="1e-6" ixz="1e-6" iyy="1e-6" iyz="1e-6" izz="1e-6" />
+    </inertial>
+    </link>
+  
+  
+  <joint name="trunk_imu_joint" type="fixed">
+    <origin rpy="0 -3.14159265359 0" xyz="0.290 0.000 0.0999214" />
+    <parent link="trunk" />
+    <child link="trunk_imu" />
+  </joint>
+  
+  <link name="trunk_imu">
+    <inertial>
+      <origin xyz="-0.00020  0.00010  0.00110" />
+      <mass value="0.018" />
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+    </inertial>
+    </link>
+  
+  </robot>

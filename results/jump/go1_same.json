@@ -1,0 +1,26 @@
+{
+ "robot": "go1",
+ "same": true,
+ "formulation": "inverse",
+ "mass_kg": 9.07,
+ "converged": true,
+ "iterations": 8,
+ "cost": 7086.42,
+ "knots": 110,
+ "final_base_xyz": [
+  1.023,
+  -0.001,
+  0.427
+ ],
+ "peak_abs_tau_Nm": 176.0,
+ "total_abs_tau_Nm": 3597.4,
+ "total_abs_tau_impulse_Nms": 35.97,
+ "max_tau_over_limit": 2.2,
+ "base_wrench_residual_max": 1.2181028450887971e-11,
+ "prelaunch_com_x": 0.069,
+ "prelaunch_feet_x": [
+  -0.176,
+  0.2
+ ],
+ "prelaunch_com_margin_m": 0.131
+}

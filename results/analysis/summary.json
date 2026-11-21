@@ -1,0 +1,674 @@
+{
+ "works_drift_threshold_m": 0.25,
+ "envelope_inertia": {
+  "range": [
+   0.2,
+   3.0
+  ],
+  "inside_n": 61,
+  "inside_works": 61,
+  "outside_n": 95,
+  "outside_works": 47,
+  "outside_fell": 20,
+  "rule_accuracy": 0.699
+ },
+ "envelope_mass": {
+  "range": [
+   0.3333333333333333,
+   2.0
+  ],
+  "inside_n": 66,
+  "inside_works": 66,
+  "outside_n": 90,
+  "outside_works": 42,
+  "outside_fell": 20,
+  "rule_accuracy": 0.731
+ },
+ "by_inertia_ratio": [
+  {
+   "bin": "[0, 0.1)",
+   "n": 30,
+   "works": 23,
+   "degraded": 6,
+   "fell": 1
+  },
+  {
+   "bin": "[0.1, 0.2)",
+   "n": 15,
+   "works": 14,
+   "degraded": 0,
+   "fell": 1
+  },
+  {
+   "bin": "[0.2, 0.5)",
+   "n": 20,
+   "works": 20,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[0.5, 2)",
+   "n": 26,
+   "works": 26,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[2, 3)",
+   "n": 15,
+   "works": 15,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[3, 5)",
+   "n": 5,
+   "works": 3,
+   "degraded": 2,
+   "fell": 0
+  },
+  {
+   "bin": "[5, 10)",
+   "n": 15,
+   "works": 5,
+   "degraded": 7,
+   "fell": 3
+  },
+  {
+   "bin": "[10, inf)",
+   "n": 30,
+   "works": 2,
+   "degraded": 13,
+   "fell": 15
+  }
+ ],
+ "by_mass_ratio": [
+  {
+   "bin": "[0, 0.1)",
+   "n": 7,
+   "works": 3,
+   "degraded": 3,
+   "fell": 1
+  },
+  {
+   "bin": "[0.1, 0.2)",
+   "n": 16,
+   "works": 13,
+   "degraded": 3,
+   "fell": 0
+  },
+  {
+   "bin": "[0.2, 0.5)",
+   "n": 28,
+   "works": 27,
+   "degraded": 0,
+   "fell": 1
+  },
+  {
+   "bin": "[0.5, 2)",
+   "n": 54,
+   "works": 54,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[2, 3)",
+   "n": 12,
+   "works": 7,
+   "degraded": 5,
+   "fell": 0
+  },
+  {
+   "bin": "[3, 5)",
+   "n": 16,
+   "works": 4,
+   "degraded": 11,
+   "fell": 1
+  },
+  {
+   "bin": "[5, 10)",
+   "n": 16,
+   "works": 0,
+   "degraded": 6,
+   "fell": 10
+  },
+  {
+   "bin": "[10, inf)",
+   "n": 7,
+   "works": 0,
+   "degraded": 0,
+   "fell": 7
+  }
+ ],
+ "inertia_only_ablation_by_ratio": [
+  {
+   "bin": "[0, 0.1)",
+   "n": 30,
+   "works": 25,
+   "degraded": 5,
+   "fell": 0
+  },
+  {
+   "bin": "[0.1, 0.2)",
+   "n": 15,
+   "works": 14,
+   "degraded": 0,
+   "fell": 1
+  },
+  {
+   "bin": "[0.2, 0.5)",
+   "n": 20,
+   "works": 20,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[0.5, 2)",
+   "n": 26,
+   "works": 26,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[2, 3)",
+   "n": 15,
+   "works": 15,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[3, 5)",
+   "n": 5,
+   "works": 5,
+   "degraded": 0,
+   "fell": 0
+  },
+  {
+   "bin": "[5, 10)",
+   "n": 15,
+   "works": 6,
+   "degraded": 8,
+   "fell": 1
+  },
+  {
+   "bin": "[10, inf)",
+   "n": 30,
+   "works": 2,
+   "degraded": 16,
+   "fell": 12
+  }
+ ],
+ "fell_pairs": [
+  "a1->solo12",
+  "aliengo->solo12",
+  "anymal_b->solo12",
+  "anymal_c->solo12",
+  "b1->solo12",
+  "b2->a1",
+  "b2->solo12",
+  "go1->solo12",
+  "go2->solo12",
+  "hyq->a1",
+  "hyq->mini_cheetah",
+  "hyq->solo12",
+  "hyqreal->a1",
+  "hyqreal->aliengo",
+  "hyqreal->go1",
+  "hyqreal->mini_cheetah",
+  "hyqreal->solo12",
+  "laikago->solo12",
+  "solo12->hyq",
+  "solo12->mini_cheetah"
+ ],
+ "n_pairs": 156,
+ "overall": {
+  "n": 156,
+  "works": 108,
+  "degraded": 28,
+  "fell": 20,
+  "median_drift": 0.07952827264283366
+ },
+ "noise_floor_drift": {
+  "go1": 0.010842308615564015,
+  "go2": 0.01295327289854911,
+  "aliengo": 0.006495586356310068,
+  "mini_cheetah": 0.020924741839654076,
+  "b2": 0.020856555188325195,
+  "hyqreal": 0.06410333185576489,
+  "a1": 0.027271624024208546,
+  "laikago": 0.013647898321379004,
+  "solo12": 0.03087956927232389,
+  "anymal_b": 0.026831386861545646,
+  "anymal_c": 0.01709058066537959,
+  "b1": 0.013725671403062984,
+  "hyq": 0.015283797825692533
+ },
+ "spearman_vs_log_drift": {
+  "inertia_mismatch": {
+   "spearman_rho": 0.779,
+   "p": 4.436919485710182e-33
+  },
+  "legM_mismatch": {
+   "spearman_rho": 0.844,
+   "p": 1.9989895660237884e-43
+  },
+  "bias_mismatch": {
+   "spearman_rho": 0.713,
+   "p": 1.7981308017202593e-25
+  },
+  "mass_ratio": {
+   "spearman_rho": 0.762,
+   "p": 7.767145222371715e-31
+  },
+  "size_ratio": {
+   "spearman_rho": 0.646,
+   "p": 8.150424189560326e-20
+  },
+  "torque_ratio": {
+   "spearman_rho": 0.665,
+   "p": 2.973643596260688e-21
+  },
+  "knees_same": {
+   "spearman_rho": -0.231,
+   "p": 0.003743868510819926
+  },
+  "same_family": {
+   "spearman_rho": -0.291,
+   "p": 0.00023086355708455534
+  }
+ },
+ "best_single_threshold": {
+  "inertia_mismatch": {
+   "accuracy": 0.776,
+   "threshold": 2.4889372956370677,
+   "fails_if": ">"
+  },
+  "legM_mismatch": {
+   "accuracy": 0.904,
+   "threshold": 3.9829967950153478,
+   "fails_if": ">"
+  },
+  "bias_mismatch": {
+   "accuracy": 0.891,
+   "threshold": 3.050730504543289,
+   "fails_if": ">"
+  },
+  "mass_ratio": {
+   "accuracy": 0.788,
+   "threshold": 1.6072762802696652,
+   "fails_if": ">"
+  },
+  "size_ratio": {
+   "accuracy": 0.763,
+   "threshold": 0.4803664162812821,
+   "fails_if": ">"
+  },
+  "torque_ratio": {
+   "accuracy": 0.75,
+   "threshold": 1.806530888589189,
+   "fails_if": ">"
+  },
+  "knees_same": {
+   "accuracy": 0.692,
+   "threshold": 0.0,
+   "fails_if": "<="
+  },
+  "same_family": {
+   "accuracy": 0.692,
+   "threshold": 0.0,
+   "fails_if": "<="
+  }
+ },
+ "majority_baseline_accuracy": 0.692,
+ "decision_tree": "|--- legM_mismatch <= 5.34\n|   |--- legM_mismatch <= 0.90\n|   |   |--- weights: [80.00, 2.00] class: 0.0\n|   |--- legM_mismatch >  0.90\n|   |   |--- weights: [28.00, 13.00] class: 0.0\n|--- legM_mismatch >  5.34\n|   |--- weights: [0.00, 33.00] class: 1.0\n",
+ "decision_tree_cv_accuracy": [
+  0.906,
+  0.774,
+  0.774,
+  0.71,
+  0.871
+ ],
+ "ablation": {
+  "ref": {
+   "n": 156,
+   "works": 156,
+   "degraded": 0,
+   "fell": 0,
+   "median_drift": 0.015452816262948425
+  },
+  "inertia": {
+   "n": 156,
+   "works": 113,
+   "degraded": 29,
+   "fell": 14,
+   "median_drift": 0.055162486413005606
+  },
+  "legM": {
+   "n": 156,
+   "works": 153,
+   "degraded": 3,
+   "fell": 0,
+   "median_drift": 0.04090732649884336
+  },
+  "bias": {
+   "n": 156,
+   "works": 155,
+   "degraded": 1,
+   "fell": 0,
+   "median_drift": 0.018824268907519988
+  }
+ },
+ "sweep": {
+  "legM": {
+   "0.1": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.06435128836500738
+   },
+   "0.25": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.0458156568190506
+   },
+   "0.5": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.02579577613369878
+   },
+   "1.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.016506431295736715
+   },
+   "2.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.027212303851252027
+   },
+   "4.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.02707801004575326
+   },
+   "8.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.02271664035244567
+   },
+   "16.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.04340273243941337
+   }
+  },
+  "bias": {
+   "0.1": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.016731712426289777
+   },
+   "0.25": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.016653949831117003
+   },
+   "0.5": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.01650486552642989
+   },
+   "1.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.016506431295736715
+   },
+   "2.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.015799687183389123
+   },
+   "4.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.015590140342807177
+   },
+   "8.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.01608798125007145
+   },
+   "16.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.018751603758701805
+   }
+  },
+  "inertia": {
+   "0.1": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.12187069405938274
+   },
+   "0.25": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.02784992124509273
+   },
+   "0.5": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.021934081891217157
+   },
+   "1.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.016506431295736715
+   },
+   "2.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.0416051094363806
+   },
+   "4.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.1792670225256885
+   },
+   "8.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.35753591590014855
+   },
+   "16.0": {
+    "fell": 0,
+    "n": 3,
+    "median_drift": 0.5868956939011506
+   }
+  }
+ },
+ "families": {
+  "same family": {
+   "n": 46,
+   "works": 38,
+   "fell": 1
+  },
+  "different family": {
+   "n": 110,
+   "works": 70,
+   "fell": 19
+  },
+  "within ANYbotics": {
+   "n": 2,
+   "works": 2,
+   "fell": 0
+  },
+  "within IIT": {
+   "n": 2,
+   "works": 2,
+   "fell": 0
+  },
+  "within Unitree": {
+   "n": 42,
+   "works": 34,
+   "fell": 1
+  }
+ },
+ "robots": {
+  "solo12": {
+   "mass_model": 2.4999982399999996,
+   "mass_cfg": 2.5,
+   "hip_height": 0.2297,
+   "tau_max": 2.6999999999999997,
+   "knee_front": "back",
+   "knee_rear": "front",
+   "family": "ODRI",
+   "Ixx": 0.03378772087649101,
+   "Iyy": 0.05304639345065102,
+   "Izz": 0.07227721750312492
+  },
+  "mini_cheetah": {
+   "mass_model": 12.473000000000004,
+   "mass_cfg": 12.5,
+   "hip_height": 0.225,
+   "tau_max": 30.94333333333333,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "MIT",
+   "Ixx": 0.15256439230997076,
+   "Iyy": 0.36054727062674613,
+   "Izz": 0.3955391629745606
+  },
+  "go1": {
+   "mass_model": 12.743448,
+   "mass_cfg": 12.019,
+   "hip_height": 0.3,
+   "tau_max": 45.43,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 0.1458536905064083,
+   "Iyy": 0.40463828754063746,
+   "Izz": 0.42362269828096794
+  },
+  "a1": {
+   "mass_model": 13.741499999999998,
+   "mass_cfg": 13.7415,
+   "hip_height": 0.2657,
+   "tau_max": 33.5,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 0.15352135983817988,
+   "Iyy": 0.37082149592535807,
+   "Izz": 0.3938048008262649
+  },
+  "go2": {
+   "mass_model": 15.206408000000003,
+   "mass_cfg": 24.0,
+   "hip_height": 0.28,
+   "tau_max": 30.94333333333333,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 0.20481631012610202,
+   "Iyy": 0.5088318323849548,
+   "Izz": 0.528009691710405
+  },
+  "aliengo": {
+   "mass_model": 24.637999999999995,
+   "mass_cfg": 24.0,
+   "hip_height": 0.35,
+   "tau_max": 38.318666666666665,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 0.260546223851928,
+   "Iyy": 0.9125510939391439,
+   "Izz": 0.9166317976954533
+  },
+  "laikago": {
+   "mass_model": 25.4334,
+   "mass_cfg": 25.4334,
+   "hip_height": 0.4043,
+   "tau_max": 43.333333333333336,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 0.44798647644422035,
+   "Iyy": 1.0150134597127853,
+   "Izz": 1.0397056263374913
+  },
+  "anymal_b": {
+   "mass_model": 30.4755,
+   "mass_cfg": 30.4755,
+   "hip_height": 0.5102,
+   "tau_max": 80.0,
+   "knee_front": "back",
+   "knee_rear": "front",
+   "family": "ANYbotics",
+   "Ixx": 0.9854870244123324,
+   "Iyy": 2.0087016381163108,
+   "Izz": 2.0304986466443364
+  },
+  "anymal_c": {
+   "mass_model": 52.13675,
+   "mass_cfg": 52.1367,
+   "hip_height": 0.562,
+   "tau_max": 80.0,
+   "knee_front": "back",
+   "knee_rear": "front",
+   "family": "ANYbotics",
+   "Ixx": 1.7524833785474847,
+   "Iyy": 4.754024759074978,
+   "Izz": 4.683219127339435
+  },
+  "b1": {
+   "mass_model": 55.68910000000001,
+   "mass_cfg": 55.6891,
+   "hip_height": 0.5277,
+   "tau_max": 108.11133333333332,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 1.6298218936718945,
+   "Iyy": 5.2420095817875305,
+   "Izz": 5.118242522632924
+  },
+  "b2": {
+   "mass_model": 83.49829199999999,
+   "mass_cfg": 83.49,
+   "hip_height": 0.485,
+   "tau_max": 233.33333333333334,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "Unitree",
+   "Ixx": 1.825504273336285,
+   "Iyy": 7.171359682969094,
+   "Izz": 7.599868121236793
+  },
+  "hyq": {
+   "mass_model": 86.77450000000002,
+   "mass_cfg": 86.7745,
+   "hip_height": 0.5993,
+   "tau_max": 150.0,
+   "knee_front": "back",
+   "knee_rear": "front",
+   "family": "IIT",
+   "Ixx": 4.191419379761643,
+   "Iyy": 11.723298340729556,
+   "Izz": 12.685183876234744
+  },
+  "hyqreal": {
+   "mass_model": 107.57264,
+   "mass_cfg": 108.4,
+   "hip_height": 0.5,
+   "tau_max": 210.0,
+   "knee_front": "back",
+   "knee_rear": "back",
+   "family": "IIT",
+   "Ixx": 4.757166690463069,
+   "Iyy": 20.6884655470833,
+   "Izz": 21.320042226726493
+  }
+ }
+}

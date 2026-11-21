@@ -1,0 +1,69 @@
+{
+ "robot": "laikago",
+ "source_urdf": "laikago.urdf",
+ "standing_pose": "grid search (no SRDF): foot under hip at 80 % reach",
+ "mass": 25.4334,
+ "inertia": [
+  [
+   0.41454,
+   0.000268,
+   -0.027583
+  ],
+  [
+   0.000268,
+   1.007958,
+   -0.000143
+  ],
+  [
+   -0.027583,
+   -0.000143,
+   1.031036
+  ]
+ ],
+ "hip_height": 0.4043,
+ "urdf_filename": "laikago.urdf",
+ "leg_length": 0.3796,
+ "foot_radius": 0.0265,
+ "effort_limits": {
+  "FR_hip_joint": 20.0,
+  "FR_thigh_joint": 55.0,
+  "FR_calf_joint": 55.0,
+  "FL_hip_joint": 20.0,
+  "FL_thigh_joint": 55.0,
+  "FL_calf_joint": 55.0,
+  "RR_hip_joint": 20.0,
+  "RR_thigh_joint": 55.0,
+  "RR_calf_joint": 55.0,
+  "RL_hip_joint": 20.0,
+  "RL_thigh_joint": 55.0,
+  "RL_calf_joint": 55.0
+ },
+ "q_stand": {
+  "FR_hip_joint": 0.0,
+  "FR_thigh_joint": 0.7126761112319999,
+  "FR_calf_joint": -1.4284550300207555,
+  "FL_hip_joint": 0.0,
+  "FL_thigh_joint": 0.7126761112319999,
+  "FL_calf_joint": -1.4284550300207555,
+  "RR_hip_joint": 0.0,
+  "RR_thigh_joint": 0.7126761112319999,
+  "RR_calf_joint": -1.4284550300207555,
+  "RL_hip_joint": 0.0,
+  "RL_thigh_joint": 0.7126761112319999,
+  "RL_calf_joint": -1.4284550300207555
+ },
+ "renamed_from": {
+  "FR_hip_joint": "FR_hip_joint",
+  "FR_thigh_joint": "FR_thigh_joint",
+  "FR_calf_joint": "FR_calf_joint",
+  "FL_hip_joint": "FL_hip_joint",
+  "FL_thigh_joint": "FL_thigh_joint",
+  "FL_calf_joint": "FL_calf_joint",
+  "RR_hip_joint": "RR_hip_joint",
+  "RR_thigh_joint": "RR_thigh_joint",
+  "RR_calf_joint": "RR_calf_joint",
+  "RL_hip_joint": "RL_hip_joint",
+  "RL_thigh_joint": "RL_thigh_joint",
+  "RL_calf_joint": "RL_calf_joint"
+ }
+}

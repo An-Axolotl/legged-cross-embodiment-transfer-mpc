@@ -1,0 +1,1 @@
+{"robot": "solo12", "mode": "record", "steps": 10000, "sim_time_s": 20.0, "fell": false, "fell_at_s": null, "wall_s": 26.0, "final_base_x": 4.081730406353083, "mass_scale": null, "action_noise": 2.0, "noise_frac": 0.044, "vel_cmd": 0.4, "profile": "rich", "parts": ["ref", "inertia", "legM", "bias"], "scale": {}, "seed": 0, "experiment": "native", "tag": "native_solo12"}

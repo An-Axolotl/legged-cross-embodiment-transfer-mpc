@@ -1,0 +1,26 @@
+{
+ "robot": "hyq",
+ "same": true,
+ "formulation": "inverse",
+ "mass_kg": 9.07,
+ "converged": true,
+ "iterations": 11,
+ "cost": 7168.98,
+ "knots": 110,
+ "final_base_xyz": [
+  0.958,
+  -0.016,
+  0.588
+ ],
+ "peak_abs_tau_Nm": 145.6,
+ "total_abs_tau_Nm": 3752.5,
+ "total_abs_tau_impulse_Nms": 37.53,
+ "max_tau_over_limit": 1.82,
+ "base_wrench_residual_max": 6.4162470211368466e-12,
+ "prelaunch_com_x": 0.06,
+ "prelaunch_feet_x": [
+  -0.34,
+  0.338
+ ],
+ "prelaunch_com_margin_m": 0.279
+}

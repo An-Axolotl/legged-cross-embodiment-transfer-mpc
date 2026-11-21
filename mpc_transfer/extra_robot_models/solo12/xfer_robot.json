@@ -1,0 +1,69 @@
+{
+ "robot": "solo12",
+ "source_urdf": "solo12.urdf",
+ "standing_pose": "SRDF 'standing'",
+ "mass": 2.5,
+ "inertia": [
+  [
+   0.031198,
+   -1e-06,
+   1.9e-05
+  ],
+  [
+   -1e-06,
+   0.051033,
+   -0.0
+  ],
+  [
+   1.9e-05,
+   0.0,
+   0.069698
+  ]
+ ],
+ "hip_height": 0.2297,
+ "urdf_filename": "solo12.urdf",
+ "leg_length": 0.2307,
+ "foot_radius": 0.0138,
+ "effort_limits": {
+  "FL_hip_joint": 2.7,
+  "FL_thigh_joint": 2.7,
+  "FL_calf_joint": 2.7,
+  "FR_hip_joint": 2.7,
+  "FR_thigh_joint": 2.7,
+  "FR_calf_joint": 2.7,
+  "RL_hip_joint": 2.7,
+  "RL_thigh_joint": 2.7,
+  "RL_calf_joint": 2.7,
+  "RR_hip_joint": 2.7,
+  "RR_thigh_joint": 2.7,
+  "RR_calf_joint": 2.7
+ },
+ "q_stand": {
+  "FL_hip_joint": 0.1,
+  "FL_thigh_joint": 0.8,
+  "FL_calf_joint": -1.6,
+  "RL_hip_joint": 0.1,
+  "RL_thigh_joint": -0.8,
+  "RL_calf_joint": 1.6,
+  "FR_hip_joint": -0.1,
+  "FR_thigh_joint": 0.8,
+  "FR_calf_joint": -1.6,
+  "RR_hip_joint": -0.1,
+  "RR_thigh_joint": -0.8,
+  "RR_calf_joint": 1.6
+ },
+ "renamed_from": {
+  "FL_hip_joint": "FL_HAA",
+  "FL_thigh_joint": "FL_HFE",
+  "FL_calf_joint": "FL_KFE",
+  "FR_hip_joint": "FR_HAA",
+  "FR_thigh_joint": "FR_HFE",
+  "FR_calf_joint": "FR_KFE",
+  "RL_hip_joint": "HL_HAA",
+  "RL_thigh_joint": "HL_HFE",
+  "RL_calf_joint": "HL_KFE",
+  "RR_hip_joint": "HR_HAA",
+  "RR_thigh_joint": "HR_HFE",
+  "RR_calf_joint": "HR_KFE"
+ }
+}
