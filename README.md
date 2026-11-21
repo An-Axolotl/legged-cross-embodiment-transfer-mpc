@@ -525,7 +525,7 @@ If you find this useful, you can cite it as a blog post:
 
 ```bibtex
 @misc{anaxolotl2026leggedxfer,
-  author       = {Fay, Kehlani},  % TODO: full name as you want it cited
+  author       = {Fay, Kehlani},
   title        = {Legged Cross-Embodiment Transfer with {MPC}: When Does a Controller Carry Over Between Robots?},
   year         = {2026},
   howpublished = {Blog post / code repository, \url{https://github.com/An-Axolotl/legged-cross-embodiment-transfer-mpc}},
